@@ -5,6 +5,8 @@ import { Box, Button, Card, CardBody, CardFooter, Footer, Grommet, Header, Headi
 import { Edit, RadialSelected, Trash } from 'grommet-icons';
 
 import { v4 as uuidv4 } from 'uuid';
+import { fileOpen, fileSave } from 'browser-nativefs';
+import filenamify from 'filenamify';
 
 const theme = {
   global: {
@@ -209,6 +211,47 @@ class App extends React.Component {
     this.setState({ cards: cards });
   }
 
+  computeSaveState() {
+    return ({
+      boxTitle: this.state.boxTitle,
+      cards: this.state.cards.map(c => ({
+        id: c.id,
+        front: c.front,
+        back: c.back,
+      })),
+    });
+  }
+
+  handleSave() {
+    fileSave(new Blob([JSON.stringify(this.computeSaveState())], {type: 'application/json'}), {
+      fileName: filenamify(this.state.boxTitle, {replacement: '-'}) + '.json',
+      extensions: ['.json'],
+    });
+  }
+
+  async handleOpen() {
+    const blob = await fileOpen({
+      mimeTypes: ['application/json'],
+    });
+
+    if (blob === null) {
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.addEventListener('loadend', () => {
+      const result = JSON.parse(reader.result);
+      this.setState({
+        boxTitle: result.boxTitle,
+        cards: result.cards.map(c => ({
+          ...c,
+          editing: false,
+        })),
+      });
+    });
+    reader.readAsText(blob);
+  }
+
   render() {
     return (
       <Grommet theme={theme} full>
@@ -217,9 +260,9 @@ class App extends React.Component {
         <Header elevation="medium" background="brand" pad={{ horizontal: 'medium', vertical: 'small' }}>
           <Heading level="3" margin="none">#cards</Heading>
           <Box direction="row" gap="small">
-            <Button label="Open" />
+            <Button label="Open" onClick={() => this.handleOpen()} />
             <TextInput value={this.state.boxTitle} onChange={e => this.setState({ boxTitle: e.target.value })} />
-            <Button label="Save" />
+            <Button label="Save" onClick={() => this.handleSave()} />
           </Box>
           <Button primary label="Add" onClick={() => this.handleAdd()} />
         </Header>
