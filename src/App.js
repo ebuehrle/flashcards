@@ -1,8 +1,8 @@
 import './App.css';
 
 import React from 'react';
-import { Box, Button, Card, CardBody, CardFooter, Footer, Grommet, Header, Heading, Layer, Markdown, RangeSelector, Stack, Text, TextArea, TextInput } from 'grommet';
-import { Edit, RadialSelected, Trash } from 'grommet-icons';
+import { Box, Button, Card, CardBody, CardFooter, Footer, Grommet, Header, Heading, Layer, Markdown, Stack, Text, TextArea, TextInput } from 'grommet';
+import { Checkmark, Edit, Radial, RadialSelected, Trash } from 'grommet-icons';
 
 import { v4 as uuidv4 } from 'uuid';
 import { fileOpen, fileSave } from 'browser-nativefs';
@@ -37,7 +37,7 @@ class Flashcard extends React.Component {
       <div className={'card-flip ' + (this.state.flipped ? 'flipped' : '')}>
         <div className="flip">
           <div className="front">
-            <Card margin="small" background="light-1" width="medium" height={{ min: 'small' }}>
+            <Card border={this.props.border} margin="small" background="light-1" width="medium" height={{ min: 'small' }}>
               <CardBody pad="medium" onClick={() => this.handleFlip()}>
                 { this.props.editing ? <TextArea 
                     autoFocus
@@ -55,7 +55,7 @@ class Flashcard extends React.Component {
             </Card>
           </div>
           <div className="back">
-            <Card margin="small" background="light-1" elevation="large" width="medium" height={{ min: 'small' }}>
+            <Card border={this.props.border} margin="small" background="light-1" elevation="large" width="medium" height={{ min: 'small' }}>
               <CardBody pad="medium" onClick={() => this.handleFlip()}>
                 { this.props.editing ? <TextArea 
                     autoFocus
@@ -70,13 +70,7 @@ class Flashcard extends React.Component {
                   </Markdown>
                 }
               </CardBody>
-              <CardFooter background="light-2" pad={{ horizontal: 'small' }} gap="xxsmall">
-                <Button icon={<Edit />} hoverIndicator onClick={(e) => this.props.onClickEdit(e) } />
-                <Button icon={<RadialSelected color="status-error" />} hoverIndicator />
-                <Button icon={<RadialSelected color="status-warning" />} hoverIndicator />
-                <Button icon={<RadialSelected color="status-ok" />} hoverIndicator />
-                <Button icon={<Trash />} hoverIndicator onClick={() => this.props.onDelete()} />
-              </CardFooter>
+              {this.props.footer}
             </Card>
           </div>
         </div>
@@ -110,7 +104,7 @@ class Toast extends React.Component {
   componentDidMount() {
     if (this.state.timeout === null) {
       this.setState({
-        timeout: setTimeout(() => this.setState({ show: false }), 3000),
+        timeout: setTimeout(() => this.hide(), 3000),
       });
     }
   }
@@ -137,27 +131,92 @@ class App extends React.Component {
       {
         id: uuidv4(),
         front: "Hey!",
-        back: "How's it going?",
+        back: "Nice to meet you!",
         editing: false,
+        progress: {
+          category: 'Hard',
+        },
       },
       {
         id: uuidv4(),
         front: "Thank you for using the greatest flash cards app ever made.",
-        back: "I promise",
+        back: "I promise!",
         editing: false,
+        progress: {
+          category: 'Medium',
+        },
       },
       {
         id: uuidv4(),
         front: "Click cards to flip and edit them.",
-        back: "Neat, right? Now go ahead and add a card!",
+        back: "Isn't that neat? Now go ahead and add a card!",
         editing: false,
+        progress: {
+          category: 'Easy',
+        },
       },
     ];
+
     this.state = {
       boxTitle: "Cards",
       cards: cards,
       notifications: [],
+      selectedCategories: new Set([
+        'Easy', 'Medium', 'Hard',
+      ]),
     };
+  }
+
+  getSaveState() {
+    return ({
+      boxTitle: this.state.boxTitle,
+      cards: this.state.cards,
+    });
+  }
+
+  handleSave() {
+    fileSave(new Blob([JSON.stringify(this.getSaveState())], {type: 'application/json'}), {
+      fileName: filenamify(this.state.boxTitle, {replacement: '-'}) + '.json',
+      extensions: ['.json'],
+    });
+  }
+
+  async handleOpen() {
+    const blob = await fileOpen({
+      mimeTypes: ['application/json'],
+    });
+
+    if (blob === null) {
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.addEventListener('loadend', () => {
+      const result = JSON.parse(reader.result);
+      this.setState({
+        boxTitle: result.boxTitle,
+        cards: result.cards,
+      });
+    });
+    reader.readAsText(blob);
+  }
+
+  getTags() {
+    // return [
+    //   {
+    //     tag: '#alpha',
+    //     count: 8,
+    //   },
+    //   {
+    //     tag: '#beta',
+    //     count: 10,
+    //   },
+    //   {
+    //     tag: '#gamma',
+    //     count: 5,
+    //   },
+    // ];
+    return [];
   }
 
   notify(notification) {
@@ -192,6 +251,9 @@ class App extends React.Component {
         front: "",
         back: "",
         editing: true,
+        progress: {
+          category: 'Hard',
+        },
       }),
     });
   }
@@ -211,48 +273,19 @@ class App extends React.Component {
     this.setState({ cards: cards });
   }
 
-  computeSaveState() {
-    return ({
-      boxTitle: this.state.boxTitle,
-      cards: this.state.cards.map(c => ({
-        id: c.id,
-        front: c.front,
-        back: c.back,
-      })),
-    });
-  }
-
-  handleSave() {
-    fileSave(new Blob([JSON.stringify(this.computeSaveState())], {type: 'application/json'}), {
-      fileName: filenamify(this.state.boxTitle, {replacement: '-'}) + '.json',
-      extensions: ['.json'],
-    });
-  }
-
-  async handleOpen() {
-    const blob = await fileOpen({
-      mimeTypes: ['application/json'],
-    });
-
-    if (blob === null) {
-      return;
-    }
-
-    const reader = new FileReader();
-    reader.addEventListener('loadend', () => {
-      const result = JSON.parse(reader.result);
-      this.setState({
-        boxTitle: result.boxTitle,
-        cards: result.cards.map(c => ({
-          ...c,
-          editing: false,
-        })),
-      });
-    });
-    reader.readAsText(blob);
+  handleSetCategory(card, category) {
+    const card_progress = { ...card.progress, category: category };
+    const cards = this.state.cards.map(c => (c === card ? { ...c, progress: card_progress } : c ));
+    this.setState({ cards: cards });
   }
 
   render() {
+    const CATEGORY_COLORMAP = {
+      'Hard': 'status-error',
+      'Medium': 'status-warning',
+      'Easy': 'status-ok',
+    };
+
     return (
       <Grommet theme={theme} full>
         <Box fill flex direction="column">
@@ -268,15 +301,26 @@ class App extends React.Component {
         </Header>
 
         <Box flex={{ grow: 1, shrink: 1 }} overflow="auto" pad="medium" direction="row" wrap justify="center">
-          {this.state.cards.map(card => <Flashcard
+          {this.state.cards.filter(card =>
+            this.state.selectedCategories.has(card.progress.category)
+          ).map(card => <Flashcard
             key={card.id}
             front={card.front}
             back={card.back}
             editing={card.editing}
-            onClickEdit={() => this.handleEdit(card)}
             onChangeFront={(e) => this.handleChangeFront(card, e)}
             onChangeBack={(e) => this.handleChangeBack(card, e)}
-            onDelete={() => this.handleDelete(card)}
+            footer={(
+              <CardFooter background="light-2" pad={{ horizontal: 'small' }} gap="xxsmall">
+                <Button icon={card.editing ? <Checkmark /> : <Edit />} hoverIndicator onClick={(e) => this.handleEdit(card) } />
+                {['Hard', 'Medium', 'Easy'].map(d => (<Button
+                  icon={card.progress.category === d ? <RadialSelected color={CATEGORY_COLORMAP[d]} /> : <Radial color={CATEGORY_COLORMAP[d]} />}
+                  hoverIndicator
+                  onClick={() => this.handleSetCategory(card, d)}
+                />))}
+                <Button icon={<Trash />} hoverIndicator onClick={() => this.handleDelete(card)} />
+              </CardFooter>
+            )}
           />)}
         </Box>
 
@@ -291,81 +335,37 @@ class App extends React.Component {
           <Stack anchor="top-right">
             <Button label="All" margin="xsmall" />
             <Box className="blurred" pad={{ horizontal: 'xsmall' }} round elevation="small">
-              <Text>10</Text>
+              <Text>{this.state.cards.length}</Text>
             </Box>
           </Stack>
 
           <Box pad="xxsmall" direction="row" gap="xxsmall" overflow="auto">
 
-            <Stack anchor="top-right">
-              <Button primary label="Hard" color="status-error" margin="xsmall" />
+            {['Hard', 'Medium', 'Easy'].map(d => (
+              <Stack key={d} anchor="top-right">
+                <Button
+                  primary={this.state.selectedCategories.has(d)}
+                  label={d}
+                  color={CATEGORY_COLORMAP[d]}
+                  margin="xsmall"
+                  onClick={() => this.setState({ 
+                    selectedCategories: this.state.selectedCategories.has(d) ?
+                      new Set([...this.state.selectedCategories].filter(c => c !== d))
+                      : new Set([...this.state.selectedCategories]).add(d),
+                  })}
+                />
+                <Box className="blurred" pad={{ horizontal: 'xsmall' }} round elevation="small">
+                  <Text>{this.state.cards.filter(c => c.progress.category === d).length}</Text>
+                </Box>
+              </Stack>
+            ))}
+
+            {this.getTags().map(t => <Stack key={t.tag} anchor="top-right">
+              <Button label={t.tag} margin="xsmall" />
               <Box className="blurred" pad={{ horizontal: 'xsmall' }} round elevation="small">
-                <Text>10</Text>
+                <Text>{t.count}</Text>
               </Box>
-            </Stack>
-
-            <Stack anchor="top-right">
-              <Button label="Medium" color="status-warning" margin="xsmall" />
-              <Box className="blurred" pad={{ horizontal: 'xsmall' }} round elevation="small">
-                <Text>23</Text>
-              </Box>
-            </Stack>
-
-            <Stack anchor="top-right">
-              <Button label="Easy" color="status-ok" margin="xsmall" />
-              <Box className="blurred" pad={{ horizontal: 'xsmall' }} round elevation="small">
-                <Text>8</Text>
-              </Box>
-            </Stack>
-
-            <Stack anchor="top-right">
-              <Button primary label="#alpha" margin="xsmall" />
-              <Box className="blurred" pad={{ horizontal: 'xsmall' }} round elevation="small">
-                <Text>10</Text>
-              </Box>
-            </Stack>
-
-            <Stack anchor="top-right">
-              <Button label="#beta" margin="xsmall" />
-              <Box pad={{ horizontal: 'xsmall' }} round elevation="small">
-                <Text>23</Text>
-              </Box>
-            </Stack>
-
-            <Stack anchor="top-right">
-              <Button label="#gamma" margin="xsmall" />
-              <Box pad={{ horizontal: 'xsmall' }} round elevation="small">
-                <Text>8</Text>
-              </Box>
-            </Stack>
-
-            <Stack anchor="top-right">
-              <Button primary label="#delta" margin="xsmall" />
-              <Box pad={{ horizontal: 'xsmall' }} round elevation="small">
-                <Text>100</Text>
-              </Box>
-            </Stack>
-
-            <Stack anchor="top-right">
-              <Button primary label="#delta" margin="xsmall" />
-              <Box pad={{ horizontal: 'xsmall' }} round elevation="small">
-                <Text>100</Text>
-              </Box>
-            </Stack>
-
-            <Stack anchor="top-right">
-              <Button primary label="#delta" margin="xsmall" />
-              <Box pad={{ horizontal: 'xsmall' }} round elevation="small">
-                <Text>100</Text>
-              </Box>
-            </Stack>
-
-            <Stack anchor="top-right">
-              <Button primary label="#delta" margin="xsmall" />
-              <Box pad={{ horizontal: 'xsmall' }} round elevation="small">
-                <Text>100</Text>
-              </Box>
-            </Stack>
+            </Stack>)}
 
           </Box>
         </Footer>
