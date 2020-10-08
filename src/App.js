@@ -139,8 +139,8 @@ class App extends React.Component {
       },
       {
         id: uuidv4(),
-        front: "This is a little flash cards app.",
-        back: "It's pretty fun!",
+        front: "This is a little flash cards app. Click cards to flip and edit them.",
+        back: "Isn't that neat?",
         editing: false,
         progress: {
           category: 'Medium',
@@ -148,8 +148,8 @@ class App extends React.Component {
       },
       {
         id: uuidv4(),
-        front: "Click cards to flip and edit them.",
-        back: "Isn't that neat? Now go ahead and add a card!",
+        front: "You can add #tags to cards. Tags will show up at the bottom of the screen.",
+        back: "Also, you can track your progress using the three coloured dots below. Go ahead and add your first card!",
         editing: false,
         progress: {
           category: 'Easy',
@@ -165,7 +165,7 @@ class App extends React.Component {
         'Easy', 'Medium', 'Hard',
       ]),
       selectedTags: new Set([
-        'Untagged',
+        'Untagged', '#tags',
       ]),
     };
   }
@@ -174,8 +174,8 @@ class App extends React.Component {
     return ({
       boxTitle: this.state.boxTitle,
       cards: this.state.cards,
-      selectedCategories: this.state.selectedCategories,
-      selectedTags: this.state.selectedTags,
+      selectedCategories: [...this.state.selectedCategories],
+      selectedTags: [...this.state.selectedTags],
     });
   }
 
@@ -201,8 +201,8 @@ class App extends React.Component {
       this.setState({
         boxTitle: result.boxTitle,
         cards: result.cards,
-        selectedCategories: result.selectedCategories,
-        selectedTags: result.selectedTags,
+        selectedCategories: new Set(result.selectedCategories),
+        selectedTags: new Set(result.selectedTags),
       });
     });
     reader.readAsText(blob);
@@ -214,7 +214,7 @@ class App extends React.Component {
     };
 
     for (const card of this.state.cards) {
-      const tagRE = /#[^#\s]+/g;
+      const tagRE = /#[^#\s!?.,:]+/g;
       const cardFrontTags = card.front.match(tagRE);
       const cardBackTags = card.back.match(tagRE);
       const cardTags = (cardFrontTags !== null ? cardFrontTags : []).concat(cardBackTags !== null ? cardBackTags : []);
