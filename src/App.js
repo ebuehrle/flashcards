@@ -139,8 +139,8 @@ class App extends React.Component {
       },
       {
         id: uuidv4(),
-        front: "Thank you for using the greatest flash cards app ever made.",
-        back: "I promise!",
+        front: "This is a little flash cards app.",
+        back: "It's pretty fun!",
         editing: false,
         progress: {
           category: 'Medium',
@@ -164,6 +164,9 @@ class App extends React.Component {
       selectedCategories: new Set([
         'Easy', 'Medium', 'Hard',
       ]),
+      selectedTags: new Set([
+        'Untagged',
+      ]),
     };
   }
 
@@ -171,6 +174,8 @@ class App extends React.Component {
     return ({
       boxTitle: this.state.boxTitle,
       cards: this.state.cards,
+      selectedCategories: this.state.selectedCategories,
+      selectedTags: this.state.selectedTags,
     });
   }
 
@@ -196,39 +201,74 @@ class App extends React.Component {
       this.setState({
         boxTitle: result.boxTitle,
         cards: result.cards,
+        selectedCategories: result.selectedCategories,
+        selectedTags: result.selectedTags,
       });
     });
     reader.readAsText(blob);
   }
 
   getTags() {
-    // return [
-    //   {
-    //     tag: '#alpha',
-    //     count: 8,
-    //   },
-    //   {
-    //     tag: '#beta',
-    //     count: 10,
-    //   },
-    //   {
-    //     tag: '#gamma',
-    //     count: 5,
-    //   },
-    // ];
-    return [];
-  }
-
-  notify(notification) {
-    const addNotification = {
-      id: uuidv4(),
-      text: notification.text,
-      action: notification.action,
+    let tagsMap = {
+      'Untagged': [],
     };
 
+    for (const card of this.state.cards) {
+      const tagRE = /#[^#\s]+/g;
+      const cardFrontTags = card.front.match(tagRE);
+      const cardBackTags = card.back.match(tagRE);
+      const cardTags = (cardFrontTags !== null ? cardFrontTags : []).concat(cardBackTags !== null ? cardBackTags : []);
+
+      if (!cardTags.length) {
+        tagsMap['Untagged'].push(card);
+        continue;
+      }
+
+      for (const cardTag of cardTags) {
+        if (cardTag in tagsMap) {
+          tagsMap[cardTag].push(card);
+        } else {
+          tagsMap[cardTag] = [ card, ];
+        }
+      }
+    }
+
+    return Object.entries(tagsMap).map(([tag, cards]) => ({
+      tag: tag,
+      cards: cards,
+    }));
+  }
+
+  filterCards() {
+    let selectedTagsCardsUnion = new Set();
+    for (const tagInfo of this.getTags()) {
+      if (this.state.selectedTags.has(tagInfo.tag)) {
+        for (const c of tagInfo.cards) {
+          selectedTagsCardsUnion.add(c);
+        }
+      }
+    }
+
+    return this.state.cards.filter(card =>
+      card.editing || this.state.selectedCategories.has(card.progress.category)
+    ).filter(card => 
+      card.editing || selectedTagsCardsUnion.has(card)
+    );
+  }
+
+  selectAllCards() {
     this.setState({
-      notifications: this.state.notifications.concat(addNotification),
+      selectedCategories: new Set([
+        'Hard', 'Medium', 'Easy',
+      ]),
+      selectedTags: new Set(
+        this.getTags().map(t => t.tag)
+      ),
     });
+  }
+
+  areAllCardsSelected() {
+    return this.filterCards().length === this.state.cards.length;
   }
 
   handleDelete(card) {
@@ -279,6 +319,18 @@ class App extends React.Component {
     this.setState({ cards: cards });
   }
 
+  notify(notification) {
+    const addNotification = {
+      id: uuidv4(),
+      text: notification.text,
+      action: notification.action,
+    };
+
+    this.setState({
+      notifications: this.state.notifications.concat(addNotification),
+    });
+  }
+
   render() {
     const CATEGORY_COLORMAP = {
       'Hard': 'status-error',
@@ -301,9 +353,7 @@ class App extends React.Component {
         </Header>
 
         <Box flex={{ grow: 1, shrink: 1 }} overflow="auto" pad="medium" direction="row" wrap justify="center">
-          {this.state.cards.filter(card =>
-            this.state.selectedCategories.has(card.progress.category)
-          ).map(card => <Flashcard
+          {this.filterCards().map(card => <Flashcard
             key={card.id}
             front={card.front}
             back={card.back}
@@ -314,6 +364,7 @@ class App extends React.Component {
               <CardFooter background="light-2" pad={{ horizontal: 'small' }} gap="xxsmall">
                 <Button icon={card.editing ? <Checkmark /> : <Edit />} hoverIndicator onClick={(e) => this.handleEdit(card) } />
                 {['Hard', 'Medium', 'Easy'].map(d => (<Button
+                  key={d}
                   icon={card.progress.category === d ? <RadialSelected color={CATEGORY_COLORMAP[d]} /> : <Radial color={CATEGORY_COLORMAP[d]} />}
                   hoverIndicator
                   onClick={() => this.handleSetCategory(card, d)}
@@ -333,7 +384,12 @@ class App extends React.Component {
         <Footer pad="small" background="light-3" elevation="medium">
           
           <Stack anchor="top-right">
-            <Button label="All" margin="xsmall" />
+            <Button
+              label="All"
+              primary={this.areAllCardsSelected()}
+              onClick={() => this.selectAllCards()}
+              margin="xsmall"
+            />
             <Box className="blurred" pad={{ horizontal: 'xsmall' }} round elevation="small">
               <Text>{this.state.cards.length}</Text>
             </Box>
@@ -361,9 +417,18 @@ class App extends React.Component {
             ))}
 
             {this.getTags().map(t => <Stack key={t.tag} anchor="top-right">
-              <Button label={t.tag} margin="xsmall" />
+              <Button
+                label={t.tag}
+                primary={this.state.selectedTags.has(t.tag)}
+                margin="xsmall"
+                onClick={() => this.setState({ 
+                  selectedTags: this.state.selectedTags.has(t.tag) ?
+                    new Set([...this.state.selectedTags].filter(s => s !== t.tag))
+                    : new Set([...this.state.selectedTags]).add(t.tag),
+                })}
+              />
               <Box className="blurred" pad={{ horizontal: 'xsmall' }} round elevation="small">
-                <Text>{t.count}</Text>
+                <Text>{t.cards.length}</Text>
               </Box>
             </Stack>)}
 
