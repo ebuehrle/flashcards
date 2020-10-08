@@ -40,7 +40,7 @@ class Flashcard extends React.Component {
             <Card border={this.props.border} margin="small" background="light-1" width="medium" height={{ min: 'small' }}>
               <CardBody pad="medium" onClick={() => this.handleFlip()}>
                 { this.props.editing ? <TextArea 
-                    autoFocus
+                    autoFocus={!this.state.flipped}
                     fill
                     resize="vertical"
                     value={this.props.front}
@@ -58,7 +58,7 @@ class Flashcard extends React.Component {
             <Card border={this.props.border} margin="small" background="light-1" elevation="large" width="medium" height={{ min: 'small' }}>
               <CardBody pad="medium" onClick={() => this.handleFlip()}>
                 { this.props.editing ? <TextArea 
-                    autoFocus
+                    autoFocus={this.state.flipped}
                     fill
                     resize="vertical"
                     value={this.props.back}
