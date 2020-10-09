@@ -252,7 +252,7 @@ class App extends React.Component {
     );
   }
 
-  selectAllCards() {
+  showAll() {
     this.setState({
       selectedCategories: new Set([
         'Hard', 'Medium', 'Easy',
@@ -261,6 +261,13 @@ class App extends React.Component {
         this.getTags().map(t => t.tag)
       ),
     });
+  }
+
+  showNone() {
+    this.setState({
+      selectedCategories: new Set([]),
+      selectedTags: new Set([]),
+    })
   }
 
   areAllCardsSelected() {
@@ -380,12 +387,15 @@ class App extends React.Component {
         <Footer pad="small" background="light-3" elevation="medium">
           
           <Stack anchor="top-right">
-            <Button
-              label="All"
-              primary={this.areAllCardsSelected()}
-              onClick={() => this.selectAllCards()}
+            { this.areAllCardsSelected() ? <Button
+              label="None"
+              onClick={() => this.showNone()}
               margin="xsmall"
-            />
+            /> : <Button
+              label="All"
+              onClick={() => this.showAll()}
+              margin="xsmall"
+            />}
             <Box className="blurred" pad={{ horizontal: 'xsmall' }} round elevation="small">
               <Text>{this.state.cards.length}</Text>
             </Box>
