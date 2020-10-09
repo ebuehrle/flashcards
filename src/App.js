@@ -47,9 +47,7 @@ class Flashcard extends React.Component {
                     onClick={(e) => e.stopPropagation()}
                     onKeyDown={(e) => e.stopPropagation()}
                     onChange={(e) => this.props.onChangeFront(e)}
-                  /> : <Markdown>
-                    {this.props.front}
-                  </Markdown>
+                  /> : this.props.front
                 }
               </CardBody>
             </Card>
@@ -65,9 +63,7 @@ class Flashcard extends React.Component {
                     onClick={(e) => e.stopPropagation()}
                     onKeyDown={(e) => e.stopPropagation()}
                     onChange={(e) => this.props.onChangeBack(e)}
-                  /> : <Markdown>
-                    {this.props.back}
-                  </Markdown>
+                  /> : this.props.back
                 }
               </CardBody>
               {this.props.footer}
