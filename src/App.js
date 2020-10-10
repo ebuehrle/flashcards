@@ -23,6 +23,7 @@ class TagHighlighter extends React.Component {
     return this.props.text
       .split(TAG_REGEX)
       .map(s => s.match(TAG_REGEX) ? <Box
+          key={s}
           as="span"
           style={{display:"inline"}}
           background="brand"
@@ -30,7 +31,7 @@ class TagHighlighter extends React.Component {
           pad={{ vertical: "xxsmall", horizontal: "xsmall" }}
         >
           {s}
-        </Box> : <span>
+        </Box> : <span key={s}>
           {s}
         </span>
       )
