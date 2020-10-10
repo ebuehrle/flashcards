@@ -23,12 +23,12 @@ class TagHighlighter extends React.Component {
     return this.props.text
       .split(TAG_REGEX)
       .map(s => s.match(TAG_REGEX) ? <Box
-        as="span"
-        style={{display:"inline"}}
-        background="brand"
-        round
-        pad={{ vertical: "xxsmall", horizontal: "xsmall" }}
-      >
+          as="span"
+          style={{display:"inline"}}
+          background="brand"
+          round
+          pad={{ vertical: "xxsmall", horizontal: "xsmall" }}
+        >
           {s}
         </Box> : <span>
           {s}
@@ -60,17 +60,16 @@ class Flashcard extends React.Component {
             <Card border={this.props.border} margin="small" background="light-1" width="medium" height={{ min: 'small' }}>
               <CardBody pad="medium" onClick={() => this.handleFlip()}>
                 { this.props.editing ? <TextArea 
-                    autoFocus={!this.state.flipped}
-                    fill
-                    resize="vertical"
-                    value={this.props.front}
-                    onClick={(e) => e.stopPropagation()}
-                    onKeyDown={(e) => e.stopPropagation()}
-                    onChange={(e) => this.props.onChangeFront(e)}
-                  /> : <span>
-                    <TagHighlighter text={this.props.front} />
-                  </span>
-                }
+                  autoFocus={!this.state.flipped}
+                  fill
+                  resize="vertical"
+                  value={this.props.front}
+                  onClick={(e) => e.stopPropagation()}
+                  onKeyDown={(e) => e.stopPropagation()}
+                  onChange={(e) => this.props.onChangeFront(e)}
+                /> : <span>
+                  <TagHighlighter text={this.props.front} />
+                </span> }
               </CardBody>
             </Card>
           </div>
@@ -78,15 +77,16 @@ class Flashcard extends React.Component {
             <Card border={this.props.border} margin="small" background="light-1" elevation="large" width="medium" height={{ min: 'small' }}>
               <CardBody pad="medium" onClick={() => this.handleFlip()}>
                 { this.props.editing ? <TextArea 
-                    autoFocus={this.state.flipped}
-                    fill
-                    resize="vertical"
-                    value={this.props.back}
-                    onClick={(e) => e.stopPropagation()}
-                    onKeyDown={(e) => e.stopPropagation()}
-                    onChange={(e) => this.props.onChangeBack(e)}
-                  /> : this.props.back
-                }
+                  autoFocus={this.state.flipped}
+                  fill
+                  resize="vertical"
+                  value={this.props.back}
+                  onClick={(e) => e.stopPropagation()}
+                  onKeyDown={(e) => e.stopPropagation()}
+                  onChange={(e) => this.props.onChangeBack(e)}
+                /> : <span>
+                  <TagHighlighter text={this.props.back} />
+                </span> }
               </CardBody>
               {this.props.footer}
             </Card>
