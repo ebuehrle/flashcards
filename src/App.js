@@ -33,7 +33,6 @@ class Flashcard extends React.Component {
 
   render() {
     return (
-      <div>
       <div className={'card-flip ' + (this.state.flipped ? 'flipped' : '')}>
         <div className="flip">
           <div className="front">
@@ -70,7 +69,6 @@ class Flashcard extends React.Component {
             </Card>
           </div>
         </div>
-      </div>
       </div>
     );
   }
@@ -355,7 +353,7 @@ class App extends React.Component {
           <Button primary label="Add" onClick={() => this.handleAdd()} />
         </Header>
 
-        <Box flex={{ grow: 1, shrink: 1 }} overflow="auto" pad="medium" direction="row" wrap justify="center">
+        <Box flex={{ grow: 1, shrink: 1 }} overflow="auto" pad="medium" direction="row" wrap justify="center" alignContent="start">
           {this.filterCards().map(card => <Flashcard
             key={card.id}
             front={card.front}
