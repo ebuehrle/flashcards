@@ -1,7 +1,7 @@
 import './App.css';
 
 import React from 'react';
-import { Box, Button, Card, CardBody, CardFooter, Footer, Grommet, Header, Heading, Layer, Markdown, Stack, Text, TextArea, TextInput } from 'grommet';
+import { Box, Button, Card, CardBody, CardFooter, Footer, Grommet, Header, Heading, Layer, Stack, Text, TextArea, TextInput } from 'grommet';
 import { Checkmark, Edit, Radial, RadialSelected, Trash } from 'grommet-icons';
 
 import { v4 as uuidv4 } from 'uuid';
@@ -15,6 +15,27 @@ const theme = {
     },
   },
 };
+
+const TAG_REGEX = /(#[^#\s!?.,:]+)/g;
+
+class TagHighlighter extends React.Component {
+  render() {
+    return this.props.text
+      .split(TAG_REGEX)
+      .map(s => s.match(TAG_REGEX) ? <Box
+        as="span"
+        style={{display:"inline"}}
+        background="brand"
+        round
+        pad={{ vertical: "xxsmall", horizontal: "xsmall" }}
+      >
+          {s}
+        </Box> : <span>
+          {s}
+        </span>
+      )
+  }
+}
 
 class Flashcard extends React.Component {
 
@@ -46,7 +67,9 @@ class Flashcard extends React.Component {
                     onClick={(e) => e.stopPropagation()}
                     onKeyDown={(e) => e.stopPropagation()}
                     onChange={(e) => this.props.onChangeFront(e)}
-                  /> : this.props.front
+                  /> : <span>
+                    <TagHighlighter text={this.props.front} />
+                  </span>
                 }
               </CardBody>
             </Card>
@@ -208,9 +231,8 @@ class App extends React.Component {
     };
 
     for (const card of this.state.cards) {
-      const tagRE = /#[^#\s!?.,:]+/g;
-      const cardFrontTags = card.front.match(tagRE);
-      const cardBackTags = card.back.match(tagRE);
+      const cardFrontTags = card.front.match(TAG_REGEX);
+      const cardBackTags = card.back.match(TAG_REGEX);
       const cardTags = (cardFrontTags !== null ? cardFrontTags : []).concat(cardBackTags !== null ? cardBackTags : []);
 
       if (!cardTags.length) {
