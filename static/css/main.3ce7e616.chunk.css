@@ -1,0 +1,2 @@
+.blurred{-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}.card-flip{perspective:1000px}.flip{transform-style:preserve-3d;transition:.6s;display:grid;grid-template:1fr/1fr}.back,.front{-webkit-backface-visibility:hidden;backface-visibility:hidden;grid-area:1/1/2/2}.back,.card-flip.flipped .flip{transform:rotateY(180deg)}
+/*# sourceMappingURL=main.3ce7e616.chunk.css.map */
