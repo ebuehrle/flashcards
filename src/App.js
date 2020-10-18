@@ -31,9 +31,7 @@ class TagHighlighter extends React.Component {
           pad={{ vertical: "xxsmall", horizontal: "xsmall" }}
         >
           {s}
-        </Box> : <span key={s}>
-          {s}
-        </span>
+        </Box> : s
       )
   }
 }
@@ -68,9 +66,9 @@ class Flashcard extends React.Component {
                   onClick={(e) => e.stopPropagation()}
                   onKeyDown={(e) => e.stopPropagation()}
                   onChange={(e) => this.props.onChangeFront(e)}
-                /> : <span>
+                /> : <pre style={{ whiteSpace: "pre-wrap", fontFamily: theme.global.font.family }}>
                   <TagHighlighter text={this.props.front} />
-                </span> }
+                </pre> }
               </CardBody>
             </Card>
           </div>
@@ -85,9 +83,9 @@ class Flashcard extends React.Component {
                   onClick={(e) => e.stopPropagation()}
                   onKeyDown={(e) => e.stopPropagation()}
                   onChange={(e) => this.props.onChangeBack(e)}
-                /> : <span>
+                /> : <pre style={{ whiteSpace: "pre-wrap", fontFamily: theme.global.font.family }}>
                   <TagHighlighter text={this.props.back} />
-                </span> }
+                </pre> }
               </CardBody>
               {this.props.footer}
             </Card>
