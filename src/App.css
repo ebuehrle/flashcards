@@ -27,11 +27,3 @@
 .card-flip.flipped .flip {
     transform: rotateY(180deg);
 }
-
-.card {
-    box-shadow: 5px 5px 10px lightgray;
-}
-
-.card-flip.flipped .card {
-    box-shadow: 10px 10px 20px lightgray;
-}
