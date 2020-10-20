@@ -89,7 +89,7 @@ class Flashcard extends React.Component {
         <div className="flip">
           <div className="front">
             <Card border={this.props.border} margin="small" background="light-1" width="medium" height={{ min: 'small' }}>
-              <CardBody pad="medium" onClick={() => this.handleFlip()}>
+              <CardBody style={{display: this.state.flipped ? 'none' : 'block'}} pad="medium" onClick={() => this.handleFlip()}>
                 { this.props.editing ? <TextAreaAutosize 
                   autoFocus={!this.state.flipped}
                   fill
@@ -104,7 +104,7 @@ class Flashcard extends React.Component {
           </div>
           <div className="back">
             <Card border={this.props.border} margin="small" background="light-1" elevation="large" width="medium" height={{ min: 'small' }}>
-              <CardBody pad="medium" onClick={() => this.handleFlip()}>
+              <CardBody style={{display: this.state.flipped ? 'block' : 'none'}} pad="medium" onClick={() => this.handleFlip()}>
                 { this.props.editing ? <TextAreaAutosize
                   autoFocus={this.state.flipped}
                   fill
