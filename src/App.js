@@ -1,7 +1,7 @@
 import './App.css';
 
 import React from 'react';
-import { Box, Button, Card, CardBody, CardFooter, Footer, Grommet, Header, Heading, Layer, Stack, Text, TextArea, TextInput } from 'grommet';
+import { Box, Button, Card, CardBody, CardFooter, Footer, Grommet, Header, Heading, Layer, Markdown, Stack, Text, TextArea, TextInput } from 'grommet';
 import { Checkmark, Edit, Radial, RadialSelected, Trash } from 'grommet-icons';
 
 import { v4 as uuidv4 } from 'uuid';
@@ -17,34 +17,6 @@ const theme = {
 };
 
 const TAG_REGEX = /(#[^#\s!?.,:]+)/g;
-
-class TagHighlighter extends React.Component {
-  recursiveMap(children, fn) {
-    React.Children.map(children, child => {
-      if (!React.isValidElement(child)) {
-        return child;
-      }
-
-      if (typeof child.type === 'function') {
-        child = child.type();
-      }
-
-      if (child.props.children) {
-        child = React.cloneElement(child, {
-          children: this.recursiveMap(child.props.children, fn),
-        });
-      }
-
-      return fn(child);
-    });
-  }
-
-  render() {
-    return this.recursiveMap(this.props.children, c => {
-
-    });
-  }
-}
 
 class Tag extends React.Component {
   render() {
@@ -77,6 +49,10 @@ class Flashcard extends React.Component {
     });
   }
 
+  highlightTags(text) {
+    return text.replace(TAG_REGEX, match => `<Tag text='${match}' />`);
+  }
+
   render() {
     return (
       <div className={'card-flip ' + (this.state.flipped ? 'flipped' : '')}>
@@ -92,9 +68,7 @@ class Flashcard extends React.Component {
                   onClick={(e) => e.stopPropagation()}
                   onKeyDown={(e) => e.stopPropagation()}
                   onChange={(e) => this.props.onChangeFront(e)}
-                /> : <pre style={{ whiteSpace: "pre-wrap", fontFamily: theme.global.font.family }}>
-                  <TagHighlighter>{this.props.front}</TagHighlighter>
-                </pre> }
+                /> : <Markdown options={{ overrides: { Tag: Tag } }}>{this.highlightTags(this.props.front)}</Markdown> }
               </CardBody>
             </Card>
           </div>
@@ -109,9 +83,7 @@ class Flashcard extends React.Component {
                   onClick={(e) => e.stopPropagation()}
                   onKeyDown={(e) => e.stopPropagation()}
                   onChange={(e) => this.props.onChangeBack(e)}
-                /> : <pre style={{ whiteSpace: "pre-wrap", fontFamily: theme.global.font.family }}>
-                  <TagHighlighter text={this.props.back} />
-                </pre> }
+                /> : <Markdown options={{ overrides: { Tag: Tag } }}>{this.highlightTags(this.props.back)}</Markdown> }
               </CardBody>
               {this.props.footer}
             </Card>
