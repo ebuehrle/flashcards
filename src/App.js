@@ -39,17 +39,17 @@ const TextAreaAutosize = (props) => {
   const textAreaRef = React.useRef();
   const [parentHeight, setParentHeight] = React.useState('auto');
   const [textAreaHeight, setTextAreaHeight] = React.useState('auto');
-  const [text, setText] = React.useState('');
+  // const [text, setText] = React.useState('');
 
   React.useEffect(() => {
     setTextAreaHeight(`${textAreaRef.current.scrollHeight}px`);
     setParentHeight(`${textAreaRef.current.scrollHeight}px`);
-  }, [text]);
+  });
 
   const handleChange = (event) => {
     setTextAreaHeight('auto');
     setParentHeight(`${textAreaRef.current.scrollHeight}px`);
-    setText(event.target.value);
+    // setText(event.target.value);
     
     if (props.onChange) {
       props.onChange(event);
@@ -89,7 +89,7 @@ class Flashcard extends React.Component {
         <div className="flip">
           <div className="front">
             <Card border={this.props.border} margin="small" background="light-1" width="medium" height={{ min: 'small' }}>
-              <CardBody style={{display: this.state.flipped ? 'none' : 'block'}} pad="medium" onClick={() => this.handleFlip()}>
+              <CardBody pad="medium" onClick={() => this.handleFlip()}>
                 { this.props.editing ? <TextAreaAutosize 
                   autoFocus={!this.state.flipped}
                   fill
@@ -98,13 +98,13 @@ class Flashcard extends React.Component {
                   onClick={(e) => e.stopPropagation()}
                   onKeyDown={(e) => e.stopPropagation()}
                   onChange={(e) => this.props.onChangeFront(e)}
-                /> : <Markdown options={{ overrides: { Tag: Tag } }}>{this.highlightTags(this.props.front)}</Markdown> }
+                /> : <Markdown style={{display: this.state.flipped ? 'none' : 'block'}} options={{ overrides: { Tag: Tag } }}>{this.highlightTags(this.props.front)}</Markdown> }
               </CardBody>
             </Card>
           </div>
           <div className="back">
             <Card border={this.props.border} margin="small" background="light-1" elevation="large" width="medium" height={{ min: 'small' }}>
-              <CardBody style={{display: this.state.flipped ? 'block' : 'none'}} pad="medium" onClick={() => this.handleFlip()}>
+              <CardBody pad="medium" onClick={() => this.handleFlip()}>
                 { this.props.editing ? <TextAreaAutosize
                   autoFocus={this.state.flipped}
                   fill
@@ -113,7 +113,7 @@ class Flashcard extends React.Component {
                   onClick={(e) => e.stopPropagation()}
                   onKeyDown={(e) => e.stopPropagation()}
                   onChange={(e) => this.props.onChangeBack(e)}
-                /> : <Markdown options={{ overrides: { Tag: Tag } }}>{this.highlightTags(this.props.back)}</Markdown> }
+                /> : <Markdown style={{display: this.state.flipped ? 'block' : 'none'}} options={{ overrides: { Tag: Tag } }}>{this.highlightTags(this.props.back)}</Markdown> }
               </CardBody>
               {this.props.footer}
             </Card>
