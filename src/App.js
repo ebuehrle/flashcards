@@ -19,20 +19,46 @@ const theme = {
 const TAG_REGEX = /(#[^#\s!?.,:]+)/g;
 
 class TagHighlighter extends React.Component {
+  recursiveMap(children, fn) {
+    React.Children.map(children, child => {
+      if (!React.isValidElement(child)) {
+        return child;
+      }
+
+      if (typeof child.type === 'function') {
+        child = child.type();
+      }
+
+      if (child.props.children) {
+        child = React.cloneElement(child, {
+          children: this.recursiveMap(child.props.children, fn),
+        });
+      }
+
+      return fn(child);
+    });
+  }
+
   render() {
-    return this.props.text
-      .split(TAG_REGEX)
-      .map(s => s.match(TAG_REGEX) ? <Box
-          key={s}
-          as="span"
-          style={{display:"inline"}}
-          background="brand"
-          round
-          pad={{ vertical: "xxsmall", horizontal: "xsmall" }}
-        >
-          {s}
-        </Box> : s
-      )
+    return this.recursiveMap(this.props.children, c => {
+
+    });
+  }
+}
+
+class Tag extends React.Component {
+  render() {
+    return (
+      <Box
+        as="span"
+        style={{display:"inline"}}
+        background="brand"
+        round
+        pad={{ vertical: "xxsmall", horizontal: "xsmall" }}
+      >
+        {this.props.text}
+      </Box>
+    );
   }
 }
 
@@ -67,7 +93,7 @@ class Flashcard extends React.Component {
                   onKeyDown={(e) => e.stopPropagation()}
                   onChange={(e) => this.props.onChangeFront(e)}
                 /> : <pre style={{ whiteSpace: "pre-wrap", fontFamily: theme.global.font.family }}>
-                  <TagHighlighter text={this.props.front} />
+                  <TagHighlighter>{this.props.front}</TagHighlighter>
                 </pre> }
               </CardBody>
             </Card>
@@ -94,7 +120,6 @@ class Flashcard extends React.Component {
       </div>
     );
   }
-
 } 
 
 class Toast extends React.Component {
