@@ -34,6 +34,36 @@ class Tag extends React.Component {
   }
 }
 
+const TextAreaAutosize = (props) => {
+
+  const textAreaRef = React.useRef();
+  const [parentHeight, setParentHeight] = React.useState('auto');
+  const [textAreaHeight, setTextAreaHeight] = React.useState('auto');
+  const [text, setText] = React.useState('');
+
+  React.useEffect(() => {
+    setTextAreaHeight(`${textAreaRef.current.scrollHeight}px`);
+    setParentHeight(`${textAreaRef.current.scrollHeight}px`);
+  }, [text]);
+
+  const handleChange = (event) => {
+    setTextAreaHeight('auto');
+    setParentHeight(`${textAreaRef.current.scrollHeight}px`);
+    setText(event.target.value);
+    
+    if (props.onChange) {
+      props.onChange(event);
+    }
+  }
+
+  return (
+    <div style={{ minHeight: parentHeight }}>
+      <TextArea {...props} ref={textAreaRef} style={{ height: textAreaHeight }} onChange={handleChange} />
+    </div>
+  );
+
+}
+
 class Flashcard extends React.Component {
 
   constructor(props) {
@@ -60,7 +90,7 @@ class Flashcard extends React.Component {
           <div className="front">
             <Card border={this.props.border} margin="small" background="light-1" width="medium" height={{ min: 'small' }}>
               <CardBody pad="medium" onClick={() => this.handleFlip()}>
-                { this.props.editing ? <TextArea 
+                { this.props.editing ? <TextAreaAutosize 
                   autoFocus={!this.state.flipped}
                   fill
                   resize="vertical"
@@ -75,7 +105,7 @@ class Flashcard extends React.Component {
           <div className="back">
             <Card border={this.props.border} margin="small" background="light-1" elevation="large" width="medium" height={{ min: 'small' }}>
               <CardBody pad="medium" onClick={() => this.handleFlip()}>
-                { this.props.editing ? <TextArea 
+                { this.props.editing ? <TextAreaAutosize
                   autoFocus={this.state.flipped}
                   fill
                   resize="vertical"
