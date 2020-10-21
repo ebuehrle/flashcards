@@ -82,8 +82,6 @@ class Flashcard extends React.Component {
   }
 
   render() {
-    console.log(escape(this.props.front));
-
     return (
       <div className={'card-flip ' + (this.state.flipped ? 'flipped' : '')}>
         <div className="flip">
