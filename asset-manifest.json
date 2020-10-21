@@ -5,8 +5,8 @@
     "main.js.map": "/flashcards/static/js/main.04da9dac.chunk.js.map",
     "runtime-main.js": "/flashcards/static/js/runtime-main.a632eb05.js",
     "runtime-main.js.map": "/flashcards/static/js/runtime-main.a632eb05.js.map",
-    "static/js/2.00e55142.chunk.js": "/flashcards/static/js/2.00e55142.chunk.js",
-    "static/js/2.00e55142.chunk.js.map": "/flashcards/static/js/2.00e55142.chunk.js.map",
+    "static/js/2.9d9f33f0.chunk.js": "/flashcards/static/js/2.9d9f33f0.chunk.js",
+    "static/js/2.9d9f33f0.chunk.js.map": "/flashcards/static/js/2.9d9f33f0.chunk.js.map",
     "static/js/3.328c289a.chunk.js": "/flashcards/static/js/3.328c289a.chunk.js",
     "static/js/3.328c289a.chunk.js.map": "/flashcards/static/js/3.328c289a.chunk.js.map",
     "static/js/4.e9775ea5.chunk.js": "/flashcards/static/js/4.e9775ea5.chunk.js",
@@ -26,11 +26,11 @@
     "static/js/11.9f9f2df3.chunk.js": "/flashcards/static/js/11.9f9f2df3.chunk.js",
     "static/js/11.9f9f2df3.chunk.js.map": "/flashcards/static/js/11.9f9f2df3.chunk.js.map",
     "index.html": "/flashcards/index.html",
-    "precache-manifest.ca57a32838a20c3f51b609db4d6143ed.js": "/flashcards/precache-manifest.ca57a32838a20c3f51b609db4d6143ed.js",
+    "precache-manifest.f7f561a513032b6742e3b7fad2d0a85c.js": "/flashcards/precache-manifest.f7f561a513032b6742e3b7fad2d0a85c.js",
     "service-worker.js": "/flashcards/service-worker.js",
     "static/css/main.3ce7e616.chunk.css.map": "/flashcards/static/css/main.3ce7e616.chunk.css.map",
     "static/js/11.9f9f2df3.chunk.js.LICENSE.txt": "/flashcards/static/js/11.9f9f2df3.chunk.js.LICENSE.txt",
-    "static/js/2.00e55142.chunk.js.LICENSE.txt": "/flashcards/static/js/2.00e55142.chunk.js.LICENSE.txt",
+    "static/js/2.9d9f33f0.chunk.js.LICENSE.txt": "/flashcards/static/js/2.9d9f33f0.chunk.js.LICENSE.txt",
     "static/js/5.b4958ae7.chunk.js.LICENSE.txt": "/flashcards/static/js/5.b4958ae7.chunk.js.LICENSE.txt",
     "static/js/6.9a131fdd.chunk.js.LICENSE.txt": "/flashcards/static/js/6.9a131fdd.chunk.js.LICENSE.txt",
     "static/js/7.54a6da7d.chunk.js.LICENSE.txt": "/flashcards/static/js/7.54a6da7d.chunk.js.LICENSE.txt",
@@ -38,7 +38,7 @@
   },
   "entrypoints": [
     "static/js/runtime-main.a632eb05.js",
-    "static/js/2.00e55142.chunk.js",
+    "static/js/2.9d9f33f0.chunk.js",
     "static/css/main.3ce7e616.chunk.css",
     "static/js/main.04da9dac.chunk.js"
   ]
