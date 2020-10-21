@@ -16,7 +16,7 @@ const theme = {
   },
 };
 
-const TAG_REGEX = /(#[^#\s!?.,:]+)/g;
+const TAG_REGEX = /(#[^#\s!?.,:<>"']+)/g;
 
 class Tag extends React.Component {
   render() {
@@ -39,7 +39,6 @@ const TextAreaAutosize = (props) => {
   const textAreaRef = React.useRef();
   const [parentHeight, setParentHeight] = React.useState('auto');
   const [textAreaHeight, setTextAreaHeight] = React.useState('auto');
-  // const [text, setText] = React.useState('');
 
   React.useEffect(() => {
     setTextAreaHeight(`${textAreaRef.current.scrollHeight}px`);
@@ -49,7 +48,6 @@ const TextAreaAutosize = (props) => {
   const handleChange = (event) => {
     setTextAreaHeight('auto');
     setParentHeight(`${textAreaRef.current.scrollHeight}px`);
-    // setText(event.target.value);
     
     if (props.onChange) {
       props.onChange(event);
@@ -84,6 +82,8 @@ class Flashcard extends React.Component {
   }
 
   render() {
+    console.log(escape(this.props.front));
+
     return (
       <div className={'card-flip ' + (this.state.flipped ? 'flipped' : '')}>
         <div className="flip">
@@ -98,7 +98,9 @@ class Flashcard extends React.Component {
                   onClick={(e) => e.stopPropagation()}
                   onKeyDown={(e) => e.stopPropagation()}
                   onChange={(e) => this.props.onChangeFront(e)}
-                /> : <Markdown style={{display: this.state.flipped ? 'none' : 'block'}} options={{ overrides: { Tag: Tag } }}>{this.highlightTags(this.props.front)}</Markdown> }
+                /> : <Markdown style={{display: this.state.flipped ? 'none' : 'block'}} options={{ overrides: { Tag: Tag } }}>
+                  {this.highlightTags(this.props.front)}
+                  </Markdown> }
               </CardBody>
             </Card>
           </div>
@@ -113,7 +115,9 @@ class Flashcard extends React.Component {
                   onClick={(e) => e.stopPropagation()}
                   onKeyDown={(e) => e.stopPropagation()}
                   onChange={(e) => this.props.onChangeBack(e)}
-                /> : <Markdown style={{display: this.state.flipped ? 'block' : 'none'}} options={{ overrides: { Tag: Tag } }}>{this.highlightTags(this.props.back)}</Markdown> }
+                /> : <Markdown style={{display: this.state.flipped ? 'block' : 'none'}} options={{ overrides: { Tag: Tag } }}>
+                  {this.highlightTags(this.props.back)}
+                  </Markdown> }
               </CardBody>
               {this.props.footer}
             </Card>
